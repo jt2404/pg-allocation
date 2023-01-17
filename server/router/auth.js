@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
   const { name, email, password, cpassword, phone, stype } = req.body;
 
   if (!name || !email || !password || !cpassword || !phone || !stype) {
-    return res.status(422).json({ message: "plz fill all the data properly" });
+    return res.status(422).json({ message: "plz fill all the data " });
   } else {
     try {
       const userExits = await User.findOne({ email: email });
