@@ -3,8 +3,12 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcryptjs'); 
 
+// const {createPg} = require("../Controllers/pgController");
+// router.route("/addpg").post(createPg);
+
 require("../db/conn");
 const User = require("../model/userSchema");
+const Pg = require("../model/pgSchema");
 router.get("/", (req, res) => {
   res.send(`Hello world from server router js`);
 });
@@ -110,4 +114,71 @@ router.post("/signin", async (req, res) => {
     console.log(err);
   }
 });
+
+
+router.post("/addpg", async (req, res) => 
+{
+  const { name, address, city, district, noofrooms, roomtype,images,price,availableroom,description} = req.body;
+
+  if (!name || !address || !city || !district || !noofrooms || !roomtype || !images || !price || !availableroom || !description)
+  {
+    return res.status(422).json({ message: "plz fill all the data " });
+  } 
+  else 
+  {
+    try 
+    {
+        const pgExits = await Pg.findOne({ name: name });
+
+      if (pgExits) {
+        return res.status(422).json({ message: "pg already exits" });
+      }
+//        else if (password != cpassword) {
+// //         return res.status(422).json({ message: "password are not matching" });
+//       } 
+        else 
+        {
+          const pg = new Pg({
+          name, address, city, district, noofrooms, roomtype,images,price,availableroom,description
+        });
+        await pg.save();
+        return res.status(200).json({ message: "registered successfully", status:200 });
+        }
+      }
+    catch (err) {
+      console.log(err);
+    }
+  }
+});
+
+
+router.post("/getpg", async (req, res) => {
+  // const { name, address, city, district, noofrooms, roomtype,images,price,availableroom,description} = req.body;
+ const name = req.body.pgname;
+ console.log(name);
+  try {
+   
+    
+    const usersearchpg = await Pg.findOne({ name: name });
+    
+    console.log(usersearchpg);
+    if(usersearchpg)
+    {
+        res.status(200).json({usersearchpg});
+    }
+    else
+    {
+        res.status(400).json({ message: "PG not found"});
+    }
+}   
+
+catch (err) {
+    console.log(err);
+  }
+});
+
+
 module.exports = router;
+
+
+

@@ -5,13 +5,34 @@ const pgSchema = new mongoose.Schema(
         name:
         {
             type: String,
-            required:true
+            required:[true,"Please Enter Product Name"],
+            trim:true
         },
         address:
-        {
-            type: String,
-            required:true
-        },
+        [
+            {
+            houseno:
+            {
+                type: Number,
+                required:true
+            },
+            street:
+            {
+                type: String,
+                required:true
+            },
+            landmark:
+            {
+                type: String,
+                required:true
+            },
+            pincode:
+            {
+                type: Number,
+                required:true
+            },
+            }
+        ],
         city:
         {
             type: String,
@@ -22,11 +43,7 @@ const pgSchema = new mongoose.Schema(
             type: String,
             required:true
         },
-        pincode:
-        {
-            type: Number,
-            required:true
-        },
+        
         noofrooms:
         {
             type: Number,
@@ -37,11 +54,17 @@ const pgSchema = new mongoose.Schema(
             type: String,
             required:true
         },
-        images:
-        {
-            type: Buffer,
-            required:true
-        },
+        images:[],
+            // public_id:
+            // {
+            //     type: String,
+            //     required:true
+            // },
+            // url:
+            // {
+                // type: String,
+                // required:true
+            // },
         price:
         {
             type: Number,
@@ -57,8 +80,28 @@ const pgSchema = new mongoose.Schema(
         {
             type: String,
             required: true
-        }
-        
+        },
+        // numofReviews:
+        // [ 
+        //     {
+        //     name: 
+        //     {
+        //         type:String,
+        //         required:true,
+        //     },
+        //     rating:
+        //     {
+        //         type: String,
+        //     required: true
+        //     },
+        //     comment:
+        //     {
+        //         type: String,
+        //         required: true
+        //     }
+        //     }
+        // ]
+
     }
 )
 const Pg  = mongoose.model('Pg',pgSchema);
