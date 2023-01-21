@@ -11,20 +11,25 @@ const [pg,setPg] = useState({});
     try {
       setloading(true)
 
-      const res= await fetch("/getpg",{
-        method: "POST",
-        headers:{
-            "Content-Type":"Application/json"
-        },
-        body: JSON.stringify({pgname:"Radhe Krishna PG"})
-      })
-      const data = await res.json();
-      if(!data || res.status === 400){
-        console.log("Not Found");
-      }else{
-          setPg(data);
-          console.log(data);
-      }
+    //   const res= await fetch("/getpg",{
+    //     method: "POST",
+    //     headers:{
+    //         "Content-Type":"Application/json"
+    //     },
+    //     body: JSON.stringify({pgname:"Radhe Krishna PG"})
+    //   })
+    const pgdata = await axios.post('/getpg',{
+        pgname : "Radhe Krishna PG",
+    })
+    setPg(pgdata);
+    console.log(pgdata);
+    //   const data = await res.json();
+    //   if(!data || res.status === 400){
+    //     console.log("Not Found");
+    //   }else{
+    //       setPg(data);
+    //       console.log(data);
+    //   }
       
 
       setloading(false)
@@ -57,8 +62,11 @@ const [pg,setPg] = useState({});
 //          </div>
 //     </div>
 <>
-<div>djfg</div>
-<Pg pg={pg}/>
+{
+    pg ? 
+    <Pg pg={pg}/> : <h1>Not Found</h1>
+}
+
 
 </>
   ); 

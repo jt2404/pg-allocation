@@ -157,18 +157,17 @@ router.post("/getpg", async (req, res) => {
  const name = req.body.pgname;
  console.log(name);
   try {
-   
     
-    const usersearchpg = await Pg.findOne({ name: name });
+    const usersearchpg = await Pg.find({});
     
     console.log(usersearchpg);
     if(usersearchpg)
     {
-        res.status(200).json({usersearchpg});
+        res.status(200).send(usersearchpg);
     }
     else
     {
-        res.status(400).json({ message: "PG not found"});
+        res.status(400).send({message : "Error Accured"});
     }
 }   
 
