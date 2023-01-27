@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); 
 const pgSchema = new mongoose.Schema(
     {
+        // id:Number,
         name:
         {
             type: String,

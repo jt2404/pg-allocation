@@ -98,20 +98,53 @@
 
 // export default HeaderBar;
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import { Row, Col, Avatar, Layout, Button, Input } from "antd";
-import logo from '../assests/images/logo.png'
+import logo from "../assests/images/logo.png";
+import AddPGModal from "./AddPGModal/index";
+import Homescreen from "./HomeScreen/Home";
 const { Header } = Layout;
 const { Search } = Input;
 
 const HeaderBar = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pgSearchValue, setPgSearchValue] = useState("");
+  const [pgList, setPgList] = useState([]);
+  const [loading, setloading] = useState(true);
+  const [error, seterror] = useState(false);
+  function handleAddPGModal() {
+    setIsModalVisible(!isModalVisible);
+  }
+  function handleCancelAddPGModal() {
+    setIsModalVisible(false);
+  }
   const navigate = useNavigate();
   const handleLocation = () => {
-
     navigate("/");
   };
+
+  const handleSearchChange = (val) => {
+    setPgSearchValue(val);
+  };
+
+  const fetchData = async () => {
+    try {
+      const pgdata = await axios.get(`/getpg/${pgSearchValue}`, {});
+      setPgList(pgdata?.data);
+      setloading(false);
+    } catch (error) {
+      seterror(true);
+      console.log(error);
+      setloading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [pgSearchValue]);
 
   return (
     <>
@@ -142,13 +175,13 @@ const HeaderBar = () => {
           <Col span={6}>
             <Link
               to={{
-                pathname: "/home",
+                pathname: "/",
               }}
             >
               <p style={{ color: "white" }}>Home</p>
             </Link>
-          </Col> 
- {/* <Col span={5}>
+          </Col>
+          {/* <Col span={5}>
             <p>
               <Link
                 style={{ color: "white" }}
@@ -160,25 +193,31 @@ const HeaderBar = () => {
           </Col> */}
 
           <Col span={6}>
-            <p style={{ color: "white" }}>Add PG</p>
+            <p>
+              <Button
+                style={{ color: "white" }}
+                type="link"
+                onClick={handleAddPGModal}
+              >
+                Add PG
+              </Button>
+            </p>
+            <AddPGModal
+              isModalOpen={isModalVisible}
+              handleCancel={handleCancelAddPGModal}
+            />
           </Col>
-          
+
           <Col span={5}>
             <p>
-              <Link
-                style={{ color: "white" }}
-                to="/login"
-              >
+              <Link style={{ color: "white" }} to="/login">
                 Log in
               </Link>
             </p>
           </Col>
           <Col span={5}>
             <p>
-              <Link
-              style={{ color: "white" }}
-              to="/signup"
-              >
+              <Link style={{ color: "white" }} to="/signup">
                 Sign up
               </Link>{" "}
             </p>
@@ -204,9 +243,11 @@ const HeaderBar = () => {
         }}
         size="large"
         className="pg-search-bar"
+        onSearch={handleSearchChange}
       />
+      <Homescreen pgList={pgList} setPgList={setPgList} />
     </>
   );
 };
 
-export default HeaderBar;
+export default HeaderBar;
