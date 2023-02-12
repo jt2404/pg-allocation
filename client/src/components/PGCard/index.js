@@ -1,11 +1,20 @@
-import React, { Fragment } from "react";
+import React, { Fragment ,useState} from "react";
 import "./index.css";
+ import {Button,Modal,Carousel} from 'react-bootstrap';
 import kr1 from "../../assests/images/kr1.jpg";
+
+// import kr2 from "../../assests/images/kr2.jpg";
 import location from "../../assests/images/location.png"
 import number from "../../assests/images/number.png"
 import ac from "../../assests/images/ac.png"
-
+// import {Link} from 'react-router-dom'
 function PGCard({ pgs }) {
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   return (
     <Fragment>
       <section className="property">
@@ -43,18 +52,79 @@ function PGCard({ pgs }) {
                         <img src={ac} alt="Room Type" />
                         <span>{pg?.roomtype}</span>
                       </li>
+                      <div style={{ float:"right "}}>
+                       {/* <Link> */}
+                        <button className="btn btn-primary m-2">Book Now</button>
+                        {/* </Link> */}
+                        </div> 
+                         <div style={{ float:"right"}}>
+                        <button className="btn btn-primary"onClick={handleShow}>view details</button>
+                        </div> 
+                        
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
+      
           ))}
+
+          <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>{pgs.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        
+        <Carousel fade>
+         {/* {pgs.images.map(url=>
+        return  <Carousel.Item>
+        <img
+
+          className="d-block w-100"
+          src={url}
+         
+        />
+      </Carousel.Item>
+        )} */}        
+        <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
+        
+        />
+        </Carousel.Item>
+        <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
+        
+        />
+        </Carousel.Item>
+        <Carousel.Item>
+        <img
+          className="d-block w-100"
+          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
+         
+        />
+        </Carousel.Item>
+        
+    </Carousel>
+        <p> pgSchema.description </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
         </div>
-        <div className="more-property">
+
+        {/* <div className="more-property">
           <a className="property-btn" href="/">
             More Properties
           </a>
-        </div>
+        </div> */}
       </section>
     </Fragment>
   );

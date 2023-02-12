@@ -2,6 +2,7 @@ import { Modal,Form,Input, Row, Col,InputNumber,Select,Upload,Button} from 'antd
 import React from 'react'
 import { UploadOutlined } from '@ant-design/icons';
 
+
 function AddPGModal ({isModalOpen,handleCancel})  {
     const roomTypeOptions = [
         {
