@@ -12,6 +12,8 @@ import SignUp from "./components/SignUpComponent";
 import LogIn from "./components/LogInComponent";
 import Homescreen from "./components/HomeScreen/Home";
 const App = () => {
+  const user = localStorage.getItem("token")
+  console.log(user)
   return (
     <>
       <Router>

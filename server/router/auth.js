@@ -2,6 +2,25 @@ const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const multer = require("multer");
+const {
+  ref,
+  uploadBytes,
+  listAll,
+  getDownloadURL,
+} = require("@firebase/storage");
+const storage = require("../firebase");
+const memoStorage = multer.memoryStorage();
+const upload = multer({ memoStorage });
+var NodeGeocoder = require("node-geocoder");
+
+const jwtKey = "e-pg";
+var options = {
+  provider: "google",
+  httpAdapter: "https", // Default
+  apiKey: "AIzaSyAFMUfQtK0DsFCXasZ526I196kwS0m97oU", // for Mapquest, OpenCage, Google Premier
+  formatter: "json", // 'gpx', 'string', ...
+};
 // const cloudinary = require('cloudinary');
 
 // const {createPg} = require("../Controllers/pgController");
@@ -72,22 +91,28 @@ router.post("/register", async (req, res) => {
           phone,
           stype,
         });
-        await user.save();
-        return res
-          .status(200)
-          .json({ message: "registered successfully", status: 200 });
+        let result = await user.save();
+        result = result.toObject();
+        delete result.password;
+        delete result.cpassword;
+        delete result.phone;
+        jwt.sign({ result }, jwtKey, { expiresIn: "2h" }, (err, token) => {
+          if (err) {
+            res.status(400).send({
+              message: "Something went wrong. Please try after sometime",
+            });
+          }
+          return res.status(200).json({
+            message: "user registered successfully",
+            status: 200,
+            result: result,
+            auth: token,
+          });
+        });
       }
     } catch (err) {
       console.log(err);
     }
-
-    // if(userRegister)
-    // {
-    //     res.status(201).json({message:"registered successfully"});
-    // }
-    // else{
-    //     res.status(500).json({message:"Failed to registered"});
-    // }
   }
 });
 
@@ -99,23 +124,32 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ error: "please fill the data properly" });
     }
     const userLogin = await User.findOne({ email: email });
-    console.log(userLogin);
 
     if (userLogin) {
-      const isMatch = await bcrypt.compare(password, userLogin.password);
+      const isMatchUser = await bcrypt.compare(password, userLogin.password);
 
       // const token = await userLogin.generateAuthToken();
-      if (!isMatch) {
+      if (!isMatchUser) {
         res.status(400).json({ message: "Invalid Credientials" });
       } else {
-        res
-          .status(200)
-          .json({
+        jwt.sign({ userLogin }, jwtKey, { expiresIn: "2h" }, (err, token) => {
+          if (err) {
+            return res.status(400).send({
+              message: "Something went wrong. Please try after sometime",
+            });
+          }
+          let result = userLogin;
+          result = result.toObject();
+          delete result.password;
+          delete result.cpassword;
+          delete result.phone;
+          return res.status(200).json({
             message: "user Signin successfully",
             status: 200,
-            username: userLogin.name,
-            useremail: userLogin.email,
+            user: result,
+            auth: token,
           });
+        });
       }
     } else {
       res.status(400).json({ message: "Invalid Email" });
@@ -123,6 +157,19 @@ router.post("/signin", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+});
+
+// logout route
+
+router.put("/logout", verifyTokenOnLogout, function (req, res) {
+  const authHeader = req.headers["authorization"];
+  jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
+    if (logout) {
+      res.status(200).send({ message: "You have been Logged Out" });
+    } else {
+      res.status(200).send({ message: "Error" });
+    }
+  });
 });
 
 // router.post('/',(req,res,next)=>
@@ -136,7 +183,9 @@ router.post("/signin", async (req, res) => {
 //           })
 
 // })
-router.post("/addpg", async (req, res) => {
+router.post("/addpg", upload.single("file"), async (req, res) => {
+  const file = req.file;
+  console.log(req?.body?.pgData)
   const {
     name,
     address,
@@ -146,10 +195,9 @@ router.post("/addpg", async (req, res) => {
     roomtype,
     images,
     price,
-    availableroom,
     description,
-  } = req.body;
-
+  } = req?.body?.pgData;
+  console.log(name, address, city, district,noofrooms, roomtype, price, description)
   if (
     !name ||
     !address ||
@@ -157,10 +205,8 @@ router.post("/addpg", async (req, res) => {
     !district ||
     !noofrooms ||
     !roomtype ||
-    !images ||
     !price ||
-    !availableroom ||
-    !description
+    !description 
   ) {
     return res.status(422).json({ message: "plz fill all the data " });
   } else {
@@ -182,10 +228,10 @@ router.post("/addpg", async (req, res) => {
         // let seqId;
         // countermodel.findOneAndUpdate({"$inc":{"seq":1}},{new:true},(err,cd)=>
         // {
-       
+
         //   if(cd == null)
         //   {
-        //     const newval = new Pg({seq:1}); 
+        //     const newval = new Pg({seq:1});
         //     newval.save();
         //     seqId=1;
         //   }
@@ -194,6 +240,7 @@ router.post("/addpg", async (req, res) => {
         //   }
         // })
         // console.log("inside else");
+        const availableroom=noofrooms;
         const pg = new Pg({
           // id:seqId,
           name,
@@ -205,8 +252,7 @@ router.post("/addpg", async (req, res) => {
           images,
           price,
           availableroom,
-          description
-          
+          description,
         });
         await pg.save();
         console.log(pg);
@@ -220,10 +266,9 @@ router.post("/addpg", async (req, res) => {
   }
 });
 
-router.get("/getpg/:key?", async (req, res) =>  {
+router.get("/getpg/:key?", verifyToken, async (req, res) => {
   // const { name, address, city, district, noofrooms, roomtype,images,price,availableroom,description} = req.body;
   //const name = req.body.pgname;
-  console.log(req?.params, "reqqq");
   try {
     if (req?.params?.key) {
       const pgs = await Pg.find({
@@ -233,7 +278,7 @@ router.get("/getpg/:key?", async (req, res) =>  {
           { district: { $regex: req.params.key, $options: "i" } },
         ],
       });
-      res.status(200).send(pgs)
+      res.status(200).send(pgs);
     } else {
       const pgs = await Pg.find();
       res.status(200).send(pgs);
@@ -246,32 +291,76 @@ router.get("/getpg/:key?", async (req, res) =>  {
   }
 });
 
+router.get("/getCity/:longitude?/:latitude?", async (req, resp) => {
+  // const { name, address, city, district, noofrooms, roomtype,images,price,availableroom,description} = req.body;
+  //const name = req.body.pgname;
+  try {
+    var geocoder = NodeGeocoder(options);
+    console.log(req?.query);
+    let longitude = req?.query?.longitude;
+    let latitude = req?.query?.latitude;
+    console.log(longitude);
+    console.log(latitude);
+    geocoder.reverse({ lat: latitude, lon: longitude }, function (err, res) {
+      console.log(err);
+      console.log(res);
+      resp.status(200).send({ city: res });
+    });
+    //console.log(usersearchpg);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send({ message: "Error occured" });
+  }
+});
 
-
-
-
-router.post("/id",async(req,res)=>
-{
+router.post("/id", verifyToken, async (req, res) => {
   const idx = req.body._id;
   // console.log(idx, "idx")
-  try
-  {
-    const data = await Pg.findOne({ "_id": idx})
+  try {
+    const data = await Pg.findOne({ _id: idx });
 
-    if(data)
-    {
-      res.status(201).json(data).send({message:"Send successfully"});
-    }
-    else{
+    if (data) {
+      res.status(201).json(data).send({ message: "Send successfully" });
+    } else {
       // res.status(201).send([]);
-      res.status(422).send({message:"Send unsuccessful"});
+      res.status(422).send({ message: "Send unsuccessful" });
     }
-  }
-  catch(err)
-  {
+  } catch (err) {
     console.log(err);
     // res.status(422).send({message:"Send unsuccessful"});
   }
-})
+});
 
+function verifyToken(req, res, next) {
+  let token = req?.headers["authorization"];
+  if (token) {
+    token = token.split(" ")[0];
+    jwt.verify(token, jwtKey, (err, valid) => {
+      if (err) {
+        res.status(401).send({ result: "Please provide a valid token" });
+      } else {
+        next();
+      }
+    });
+  } else {
+    res.status(401).send({ result: "Please add the token with header" });
+  }
+}
+
+function verifyTokenOnLogout(req, res, next) {
+  let token = req?.body?.headers?.authorization;
+  console.log(token)
+  if (token) {
+    token = token.split(" ")[0];
+    jwt.verify(token, jwtKey, (err, valid) => {
+      if (err) {
+        res.status(401).send({ result: "Please provide a valid token" });
+      } else {
+        next();
+      }
+    });
+  } else {
+    res.status(401).send({ result: "Please add the token with header" });
+  }
+}
 module.exports = router;
