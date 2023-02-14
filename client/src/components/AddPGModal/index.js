@@ -17,20 +17,6 @@ import "./index.css";
 import { INITIAL_PG_DATA } from "./constants";
 import axios from "axios";
 
-<<<<<<< HEAD
-
-function AddPGModal ({isModalOpen,handleCancel})  {
-    const roomTypeOptions = [
-        {
-            value:"Non-AC",
-            label:"Non AC" 
-        },
-        {
-            value:"AC",
-            label:"AC" 
-        }
-    ]
-=======
 function AddPGModal({ isModalOpen, handleCancel }) {
   const [pgData, setPgData] = useState(INITIAL_PG_DATA);
   const roomTypeOptions = [
@@ -105,7 +91,6 @@ function AddPGModal({ isModalOpen, handleCancel }) {
     return false;
   };
   const [form] = Form.useForm();
->>>>>>> 469eaa3d2082947ff3746132053139054c811bf7
   return (
     <Modal
       title="Add PG"
