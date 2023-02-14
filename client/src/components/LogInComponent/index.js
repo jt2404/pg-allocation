@@ -9,7 +9,7 @@ const LogIn = () => {
   };
   const onFinish = async (values) => {
     const { email, password } = userInfo;
-    const res = await fetch("/signin", {
+    const res = await fetch("http://localhost:8000/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

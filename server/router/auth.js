@@ -185,7 +185,7 @@ router.put("/logout", verifyTokenOnLogout, function (req, res) {
 // })
 router.post("/addpg", upload.single("file"), async (req, res) => {
   const file = req.file;
-  console.log(req?.body?.pgData)
+  console.log(req?.body?.pgData);
   const {
     name,
     address,
@@ -197,7 +197,16 @@ router.post("/addpg", upload.single("file"), async (req, res) => {
     price,
     description,
   } = req?.body?.pgData;
-  console.log(name, address, city, district,noofrooms, roomtype, price, description)
+  console.log(
+    name,
+    address,
+    city,
+    district,
+    noofrooms,
+    roomtype,
+    price,
+    description
+  );
   if (
     !name ||
     !address ||
@@ -206,7 +215,7 @@ router.post("/addpg", upload.single("file"), async (req, res) => {
     !noofrooms ||
     !roomtype ||
     !price ||
-    !description 
+    !description
   ) {
     return res.status(422).json({ message: "plz fill all the data " });
   } else {
@@ -240,7 +249,7 @@ router.post("/addpg", upload.single("file"), async (req, res) => {
         //   }
         // })
         // console.log("inside else");
-        const availableroom=noofrooms;
+        const availableroom = noofrooms;
         const pg = new Pg({
           // id:seqId,
           name,
@@ -254,11 +263,13 @@ router.post("/addpg", upload.single("file"), async (req, res) => {
           availableroom,
           description,
         });
-        await pg.save();
+        let newPg = await pg.save();
         console.log(pg);
-        return res
-          .status(200)
-          .json({ message: "registered successfully", status: 200 });
+        return res.status(200).json({
+          message: "registered successfully",
+          data: newPg,
+          status: 200,
+        });
       }
     } catch (err) {
       console.log(err);
@@ -313,14 +324,15 @@ router.get("/getCity/:longitude?/:latitude?", async (req, resp) => {
   }
 });
 
-router.post("/id", verifyToken, async (req, res) => {
-  const idx = req.body._id;
-  // console.log(idx, "idx")
+router.get("/pg/:id", verifyToken, async (req, res) => {
+  
+  const idx = req.params.id;
+  console.log(idx, "idx")
   try {
     const data = await Pg.findOne({ _id: idx });
 
     if (data) {
-      res.status(201).json(data).send({ message: "Send successfully" });
+      res.status(200).json(data).send({ message: "Send successfully" });
     } else {
       // res.status(201).send([]);
       res.status(422).send({ message: "Send unsuccessful" });
@@ -349,7 +361,7 @@ function verifyToken(req, res, next) {
 
 function verifyTokenOnLogout(req, res, next) {
   let token = req?.body?.headers?.authorization;
-  console.log(token)
+  console.log(token);
   if (token) {
     token = token.split(" ")[0];
     jwt.verify(token, jwtKey, (err, valid) => {

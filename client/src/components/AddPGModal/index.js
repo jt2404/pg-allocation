@@ -46,18 +46,31 @@ function AddPGModal({ isModalOpen, handleCancel }) {
       return { ...prevPgData, ["image"]: file };
     });
   };
-  console.log(pgData)
+  console.log(pgData);
   const handleSubmit = async () => {
-    const res = await axios.post("/addpg", {
-      pgData,
-      headers: {
-        authorization: JSON.parse(localStorage.getItem("token")),
-      },
-    });
+    const res = await axios.post(
+      "http://localhost:8000/addpg",
+      { pgData },
+      {
+        headers: {
+          authorization: JSON.parse(localStorage.getItem("token")),
+        },
+      }
+    );
+    console.log(res)
     if (res.status === 200) {
+      let data = new FormData();
+      data.append("pic", pgData.image);
+      data.append("pgId", res?.data?.data?._id);
+      const addPicRes = await axios.post("/addPicture", data, {
+        headers: {
+          authorization: JSON.parse(localStorage.getItem("token")),
+        },
+      });
       message.success("PG added successfully", 2);
     }
   };
+
   const disableAddPGButton = () => {
     if (
       !pgData?.price ||

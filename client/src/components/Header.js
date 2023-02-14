@@ -113,7 +113,7 @@ const HeaderBar = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pgSearchValue, setPgSearchValue] = useState("");
   const [pgList, setPgList] = useState([]);
-  const [userRole, setUserRole] = useState("");
+  const [userRole, setUserRole] = useState(JSON.parse(localStorage.getItem("user"))?.stype);
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState(false);
   const user = localStorage.getItem("user");
@@ -175,7 +175,7 @@ const HeaderBar = () => {
 
   const fetchData = async () => {
     try {
-      const pgdata = await axios.get(`/getpg/${pgSearchValue}`, {
+      const pgdata = await axios.get(`http://localhost:8000/getpg/${pgSearchValue}`, {
         headers: {
           authorization: JSON.parse(localStorage.getItem("token")),
         },
@@ -194,11 +194,6 @@ const HeaderBar = () => {
   useEffect(() => {
     fetchData();
   }, [pgSearchValue]);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    setUserRole(user?.stype);
-  }, []);
 
   return (
     <>
