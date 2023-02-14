@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat+Alternates:ital,wght@1,100&family=Space+Mono:ital@1&display=swap');
 
 .header {
   width: 100%;
@@ -8,9 +9,9 @@
 }
 
 .header-logo {
-  height: 27px;
+  height: 62px;
   max-width: 150px;
-  margin-right: 24px;
+  margin-top: -5px;
 }
 
 .header-right {
@@ -103,3 +104,31 @@
     width: 500;
     margin: 20px auto;
 }
+.cityname{
+  color: blue;
+}
+.smallimg{
+  height:200px;
+  width:100% !important;
+  border-radius:5px !important;
+}
+div h1{
+  font-size:20px !important;
+}
+btn{
+  background-color: blue !important;
+  color:white !important;
+  box-shadow: non !important;
+}
+bs{
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top:20px !important;
+  border-radius: 5px !important;
+  padding: 20px !important;
+
+}
+
+
+
+
+      

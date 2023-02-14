@@ -27,6 +27,8 @@ const SignUp = () => {
     });
     const data = await res.json();
     if (data?.status === 200) {
+      localStorage.setItem('user',JSON.stringify(data?.result))
+      localStorage.setItem('token', JSON.stringify(data?.auth))
       handleLocation();
     } else {
       message.error(data?.message);
@@ -53,7 +55,8 @@ const SignUp = () => {
     <div className="login-page">
       <div className="login-box">
         <div className="illustration-wrapper">
-          <img src="https://mixkit.imgix.net/art/preview/mixkit-left-handed-man-sitting-at-a-table-writing-in-a-notebook-27-original-large.png?q=80&auto=format%2Ccompress&h=700" alt="Signup"/>
+          {/* <img src="https://mixkit.imgix.net/art/preview/mixkit-left-handed-man-sitting-at-a-table-writing-in-a-notebook-27-original-large.png?q=80&auto=format%2Ccompress&h=700" alt="Signup"/> */}
+          <img src="https://img.freepik.com/free-vector/college-student-dorm-interior-young-travelers-stopping-hostel-vector-illustration-alternative-accommodation-backpackers-house-trip-concept_74855-13027.jpg?w=900&t=st=1673976215~exp=1673976815~hmac=3fc26d704fa6a91c192e24c72efb0dd75e12aeae001aec1498c7a56c763808b5" alt="Login"/>
         </div>
         <Form
           name="login-form"
