@@ -27,8 +27,8 @@ function PGCard({ pgs }) {
               <div className="single-property">
                 <div className="card">
                   <div className="property-thumb">
-                    <div className="property-tag">For Sale</div>
-                    <img src={kr1} alt="Palace" />
+                    {/* <div className="property-tag">For Sale</div> */}
+                    <img src={pg.images[8] || kr1} alt="Palace" />
                   </div>
                   <div className="property-content">
                     <h3>{pg?.name}</h3>

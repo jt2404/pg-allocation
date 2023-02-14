@@ -27,6 +27,8 @@ const SignUp = () => {
     });
     const data = await res.json();
     if (data?.status === 200) {
+      localStorage.setItem('user',JSON.stringify(data?.result))
+      localStorage.setItem('token', JSON.stringify(data?.auth))
       handleLocation();
     } else {
       message.error(data?.message);

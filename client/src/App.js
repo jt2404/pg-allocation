@@ -13,6 +13,8 @@ import LogIn from "./components/LogInComponent";
 import Homescreen from "./components/HomeScreen/Home";
 //import BookingScreen from "./components/BookingScreen/Booking";
 const App = () => {
+  const user = localStorage.getItem("token")
+  console.log(user)
   return (
     <>
       <Router>

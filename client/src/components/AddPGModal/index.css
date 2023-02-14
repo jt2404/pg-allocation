@@ -1,0 +1,16 @@
+.create-req-form > .add-new-details-container {
+  background: lightgray;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ant-form-vertical .ant-form-item-label,
+.ant-col-24.ant-form-item-label,
+.ant-col-xl-24.ant-form-item-label {
+  line-height: 1.5715;
+
+  padding: 0 0 0px;
+  text-align: left;
+
+  white-space: initial;
+}
