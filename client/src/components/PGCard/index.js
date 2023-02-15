@@ -1,21 +1,6 @@
-<<<<<<< HEAD
-import React, { Fragment ,useState} from "react";
-=======
 import React, { Fragment, useState } from "react";
->>>>>>> d1284de1c78336efc40a4f60cd800856f5109ac2
 import "./index.css";
- import {Button,Modal,Carousel} from 'react-bootstrap';
 import kr1 from "../../assests/images/kr1.jpg";
-<<<<<<< HEAD
-
-// import kr2 from "../../assests/images/kr2.jpg";
-import location from "../../assests/images/location.png"
-import number from "../../assests/images/number.png"
-import ac from "../../assests/images/ac.png"
-// import {Link} from 'react-router-dom'
-function PGCard({ pgs }) {
-
-=======
 import { Button, Modal, Carousel } from "react-bootstrap";
 import location from "../../assests/images/location.png";
 import number from "../../assests/images/number.png";
@@ -23,7 +8,6 @@ import ac from "../../assests/images/ac.png";
 import { Link } from "react-router-dom";
 
 function PGCard({ pgs }) {
->>>>>>> d1284de1c78336efc40a4f60cd800856f5109ac2
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -85,49 +69,6 @@ function PGCard({ pgs }) {
                         </div> */}
                       </ul>
                     </div>
-<<<<<<< HEAD
-                    <span className="amount">&#8377;{pg?.price}</span>
-                  </div>
-                  <div className="property-footer">
-                    <ul>
-                      <li>
-                        <img src={location} alt="district" />
-                        <span>{pg?.district}</span>
-                      </li>
-                      <li>
-                        <img src={number} alt="Available Rooms" />
-                        <span>{pg?.noofrooms}</span>
-                      </li>
-                      <li>
-                        <img src={ac} alt="Room Type" />
-                        <span>{pg?.roomtype}</span>
-                      </li>
-                      <div style={{ float:"right "}}>
-                       {/* <Link> */}
-                        <button className="btn btn-primary m-2">Book Now</button>
-                        {/* </Link> */}
-                        </div> 
-                         <div style={{ float:"right"}}>
-                        <button className="btn btn-primary"onClick={handleShow}>view details</button>
-                        </div> 
-                        
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-      
-          ))}
-
-          <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{pgs.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-        
-        <Carousel fade>
-         {/* {pgs.images.map(url=>
-=======
                   </div>
                 </div>
               </div>
@@ -141,7 +82,6 @@ function PGCard({ pgs }) {
             <Modal.Body>
               <Carousel fade> */}
                 {/* {pgs.images.map(url=>
->>>>>>> d1284de1c78336efc40a4f60cd800856f5109ac2
         return  <Carousel.Item>
         <img
 
@@ -150,43 +90,6 @@ function PGCard({ pgs }) {
          
         />
       </Carousel.Item>
-<<<<<<< HEAD
-        )} */}        
-        <Carousel.Item>
-        <img
-          className="d-block w-100"
-          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
-        
-        />
-        </Carousel.Item>
-        <Carousel.Item>
-        <img
-          className="d-block w-100"
-          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
-        
-        />
-        </Carousel.Item>
-        <Carousel.Item>
-        <img
-          className="d-block w-100"
-          src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
-         
-        />
-        </Carousel.Item>
-        
-    </Carousel>
-        <p> pgSchema.description </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-        </div>
-
-=======
         )} */}
                 {/* <Carousel.Item>
                   <img
@@ -216,7 +119,6 @@ function PGCard({ pgs }) {
             </Modal.Footer>
           </Modal> */}
         </div>
->>>>>>> d1284de1c78336efc40a4f60cd800856f5109ac2
         {/* <div className="more-property">
           <a className="property-btn" href="/">
             More Properties

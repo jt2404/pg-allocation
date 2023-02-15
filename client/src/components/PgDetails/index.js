@@ -29,8 +29,7 @@ const PgDetails = () => {
   }, [id]);
 
   return (
-      <p>Pg details name <h1> {pgInfo.name}</h1></p>
+      <p>Pg details name <h1> {pgInfo.name}</h1> </p>
   );
 };
-
 export default PgDetails;
