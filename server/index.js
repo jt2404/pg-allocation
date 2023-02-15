@@ -34,7 +34,7 @@ app.post("/addPicture", upload.single("pic"), async (req, res) => {
           else{
               console.log("Updated User : ", docs);
           }})
-          res.send("uploaded!");
+          res.status(200).send({message: "uploaded!"});
       });
     })
     .catch((error) => console.log(error.message));

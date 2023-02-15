@@ -102,10 +102,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import { Row, Col, Avatar, Layout, Button, Input, Tooltip, Card } from "antd";
+import { Row, Col, Avatar, Layout, Button, Input, Tooltip, Card, Form } from "antd";
 import logo from "../assests/images/Screenshot_20230120_133416.png";
 import AddPGModal from "./AddPGModal/index";
 import Homescreen from "./HomeScreen/Home";
+import { INITIAL_PG_DATA } from "./AddPGModal/constants";
 const { Header } = Layout;
 const { Search } = Input;
 
@@ -117,13 +118,17 @@ const HeaderBar = () => {
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState(false);
   const user = localStorage.getItem("user");
+  const [pgData, setPgData] = useState(INITIAL_PG_DATA);
+  const [form] = Form.useForm();
   console.log(JSON.parse(user)?.name);
   function handleAddPGModal() {
     setIsModalVisible(!isModalVisible);
   }
-  function handleCancelAddPGModal() {
-    setIsModalVisible(false);
-  }
+  const handleCancel = () => {
+    setIsModalVisible(false)
+    setPgData(INITIAL_PG_DATA)
+    form.resetFields();
+  };
   // var options = {
   //   enableHighAccuracy: true,
   //   timeout: 5000,
@@ -259,7 +264,11 @@ const HeaderBar = () => {
             </p>
             <AddPGModal
               isModalOpen={isModalVisible}
-              handleCancel={handleCancelAddPGModal}
+              setIsModalVisible={setIsModalVisible}
+              pgData={pgData}
+              setPgData={setPgData}
+              handleCancel={handleCancel}
+              form={form}
             />
           </Col>
           {!user && (
