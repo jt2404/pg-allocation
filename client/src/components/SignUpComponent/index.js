@@ -64,8 +64,8 @@ const SignUp = () => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
         >
-          <p className="form-title">Welcome back</p>
-          <p>Sign Up to the PG Allocation</p>
+          <p className="form-title">Welcome </p>
+          <p>Sign Up to the StayEase</p>
           <Form.Item
             name="username"
             rules={[{ required: true, message: 'Please input your username!' }]}

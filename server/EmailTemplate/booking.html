@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Booking Confirmation Summary</title>
+    </head>
+    <body>
+        <p style="font-weight: 600; color: #0B294E;">Hello, {{username}}</p>
+        <p>Your booking has been confirmed. Thank you for booking with us.</p>
+        <p style="color:#536789; margin-top: 0px; font-weight: 800; margin-bottom: 3px;">You will find the details of your booking and payment details below.</p>
+        <table style="width: 100%;">
+            <caption></caption>
+            <tbody>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Cost</th>
+                    <th>Booked on</th>
+                    <th>PG Name</th>
+                    <th>PG Address</th>
+                    <th>City</th>
+                </tr>
+                <tr>
+                    <td>{{startdate}}</td>
+                    <td>{{enddate}}</td>
+                    <td>{{cost}}</td>
+                    <td>{{pgname}}</td>
+                    <td>{{pgaddress}}</td>
+                    <td>{{city}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <em>This is an automated email. Please don't reply to this email.</em>
+        </p>
+        <p>Thanks,</p>
+        <p>StayEase Platform</p>
+    </body>
+</html>

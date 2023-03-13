@@ -24,6 +24,7 @@ const LogIn = () => {
       localStorage.setItem('user', JSON.stringify(data?.user))
       localStorage.setItem('token', JSON.stringify(data?.auth))
       handleLocation();
+      window.location.reload();
     } else {
       message.error(data?.message);
     }
@@ -54,7 +55,7 @@ const LogIn = () => {
           onFinishFailed={onFinishFailed}
         >
           <p className="form-title">Welcome back</p>
-          <p>Login to the PG Allocation</p>
+          <p>Login to the StayEase</p>
           <Form.Item
             name="email"
             rules={[{ required: true, message: "Please input your email!" }]}

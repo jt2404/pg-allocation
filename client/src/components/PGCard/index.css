@@ -88,6 +88,17 @@
   font-family: "Poppins", sans-serif;
 }
 
+.rating {
+  display: flex;
+  border-radius: 30px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  flex-direction: row-reverse;
+  float: right;
+}
+
 .property-footer {
   padding: 12px 25px;
 }

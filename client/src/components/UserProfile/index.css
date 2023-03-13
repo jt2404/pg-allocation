@@ -1,0 +1,36 @@
+.avatar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: inherit;
+}
+
+.avatar-wrapper .avatar-dropdown {
+    background-color: rgb(122, 216, 149);
+}
+
+.profile-widget-email {
+    margin: 0;
+}
+
+.avatar-container {
+    position: relative;
+}
+
+.avatar-edit-icon {
+    position: absolute;
+    bottom: -8px;
+    right: -3px;
+    z-index: 20;
+    border-radius: 50%;
+    box-shadow: 0 0 50px #ccc;
+}
+
+.avatar-edit-anchor {
+    color: black;
+    text-decoration: none !important;
+}
+
+.avatar-edit-anchor:hover {
+    color: black;
+    text-decoration: none !important;
+}

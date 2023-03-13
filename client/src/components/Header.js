@@ -102,31 +102,64 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import { Row, Col, Avatar, Layout, Button, Input, Tooltip, Card, Form } from "antd";
-import logo from "../assests/images/Screenshot_20230120_133416.png";
+import {
+  Row,
+  Col,
+  Avatar,
+  Layout,
+  Button,
+  Input,
+  Tooltip,
+  Card,
+  Form,
+} from "antd";
+import logo from "../assests/images/WhatsApp Image 2023-02-15 at 13.28.35.jpg";
 import AddPGModal from "./AddPGModal/index";
 import Homescreen from "./HomeScreen/Home";
-import { INITIAL_PG_DATA } from "./AddPGModal/constants";
+import Filters from "./Filters";
+import { useStore } from "../context/pg_store";
+import UserProfile from "./UserProfile";
+import MapModal from "./MapModal";
+
 const { Header } = Layout;
-const { Search } = Input;
+const { Meta } = Card;
 
 const HeaderBar = () => {
+  function INITIAL_PG_DATA(userId) {
+    const initialData = {
+      name: "",
+      address: "",
+      city: "",
+      district: "",
+      noofrooms: 1,
+      roomtype: "Non-AC",
+      price: 1,
+      description: "",
+      image: null,
+      userId: userId,
+    };
+    return initialData;
+  }
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [pgSearchValue, setPgSearchValue] = useState("");
-  const [pgList, setPgList] = useState([]);
-  const [userRole, setUserRole] = useState(JSON.parse(localStorage.getItem("user"))?.stype);
+  const [userRole, setUserRole] = useState(
+    JSON.parse(localStorage.getItem("user"))?.stype
+  );
   const [loading, setloading] = useState(true);
   const [error, seterror] = useState(false);
   const user = localStorage.getItem("user");
-  const [pgData, setPgData] = useState(INITIAL_PG_DATA);
+  const [pgData, setPgData] = useState(INITIAL_PG_DATA(JSON.parse(user)?._id));
+  const [mapPGModalVisible, setMapPGModalVisible] = useState(false);
   const [form] = Form.useForm();
-  console.log(JSON.parse(user)?.name);
+
   function handleAddPGModal() {
     setIsModalVisible(!isModalVisible);
   }
+  function handleShowPGOnMapModal() {
+    setMapPGModalVisible(!mapPGModalVisible);
+  }
   const handleCancel = () => {
-    setIsModalVisible(false)
-    setPgData(INITIAL_PG_DATA)
+    setIsModalVisible(false);
+    setPgData(INITIAL_PG_DATA);
     form.resetFields();
   };
   // var options = {
@@ -163,42 +196,15 @@ const HeaderBar = () => {
     const res = await axios.put("/logout", {
       headers: {
         "Content-Type": "application/json",
-        authorization: JSON.parse(localStorage.getItem("token")),
       },
     });
-    console.log(res);
     if (res.status === 200) {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      navigate("/");
       window.location.reload();
     }
   };
-
-  const handleSearchChange = (val) => {
-    setPgSearchValue(val);
-  };
-
-  const fetchData = async () => {
-    try {
-      const pgdata = await axios.get(`http://localhost:8000/getpg/${pgSearchValue}`, {
-        headers: {
-          authorization: JSON.parse(localStorage.getItem("token")),
-        },
-      });
-      setPgList(pgdata?.data);
-      setloading(false);
-    } catch (error) {
-      seterror(true);
-      if (error?.response?.data?.result === "Please provide a valid token") {
-        localStorage.removeItem("user");
-      }
-      setloading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [pgSearchValue]);
 
   return (
     <>
@@ -208,6 +214,7 @@ const HeaderBar = () => {
           top: 0,
           zIndex: 1,
           width: "100%",
+          background: "#05152a",
         }}
       >
         <Row justify="space-between">
@@ -226,7 +233,7 @@ const HeaderBar = () => {
           <Col span={4}>
             <p>
               <Button
-                style={{ color: "white" }}
+                style={{ color: "white", marginTop: "10px" }}
                 type="link"
                 onClick={() => navigate("/")}
               >
@@ -234,21 +241,11 @@ const HeaderBar = () => {
               </Button>
             </p>
           </Col>
-          {/* <Col span={5}>
-            <p>
-              <Link
-                style={{ color: "white" }}
-                to="/home"
-              >
-                Home
-              </Link>
-            </p>
-          </Col> */}
           <Col span={4}>
             <p>
               {userRole !== "user" && userRole === "admin" ? (
                 <Button
-                  style={{ color: "white" }}
+                  style={{ color: "white", marginTop: "10px" }}
                   type="link"
                   onClick={handleAddPGModal}
                 >
@@ -256,7 +253,11 @@ const HeaderBar = () => {
                 </Button>
               ) : (
                 userRole === "user" && (
-                  <Button style={{ color: "white" }} type="link">
+                  <Button
+                    style={{ color: "white", marginTop: "10px" }}
+                    type="link"
+                    onClick={handleShowPGOnMapModal}
+                  >
                     PG on Map
                   </Button>
                 )
@@ -269,14 +270,16 @@ const HeaderBar = () => {
               setPgData={setPgData}
               handleCancel={handleCancel}
               form={form}
+              userId={JSON.parse(user)?._id}
             />
+            <MapModal mapPGModalVisible={mapPGModalVisible} setMapPGModalVisible={setMapPGModalVisible} />
           </Col>
           {!user && (
             <Col span={5}>
               <p>
                 <Button
                   type="link"
-                  style={{ color: "white" }}
+                  style={{ color: "white", marginTop: "10px" }}
                   onClick={() => navigate("/login")}
                 >
                   Log in
@@ -289,7 +292,7 @@ const HeaderBar = () => {
               <p>
                 <Button
                   type="link"
-                  style={{ color: "white" }}
+                  style={{ color: "white", marginTop: "10px" }}
                   onClick={() => navigate("/signup")}
                 >
                   Sign up
@@ -297,11 +300,11 @@ const HeaderBar = () => {
               </p>
             </Col>
           )}
-          {user && (
+          {/* {user && (
             <Col span={5}>
               <p>
                 <Button
-                  style={{ color: "white" }}
+                  style={{ color: "white", marginTop: "10px" }}
                   type="link"
                   onClick={handleLogOut}
                 >
@@ -309,43 +312,17 @@ const HeaderBar = () => {
                 </Button>
               </p>
             </Col>
-          )}
+          )} */}
           {user && (
-            <Col span={2}>
-              <Tooltip
-                title={
-                  <div>
-                    <div>{JSON.parse(user)?.name}</div>
-                    <div>{JSON.parse(user)?.email}</div>
-                  </div>
-                }
-                placement="top"
-              >
-                <Avatar
-                  style={{
-                    color: "#f56a00",
-                    backgroundColor: "#fde3cf",
-                  }}
-                >
-                  {JSON.parse(user)?.name[0].toUpperCase()}
-                </Avatar>
-              </Tooltip>
+            <Col span={2} style={{ marginTop: "10px" }}>
+              <UserProfile
+                name={JSON.parse(user)?.name}
+                email={JSON.parse(user)?.email}
+              />
             </Col>
           )}
         </Row>
       </Header>
-      <Search
-        placeholder="Search for PG and Hostel Room"
-        enterButton
-        style={{
-          width: 500,
-          margin: "50px auto",
-        }}
-        size="large"
-        className="pg-search-bar"
-        onSearch={handleSearchChange}
-      />
-      <Homescreen pgList={pgList} setPgList={setPgList} />
     </>
   );
 };

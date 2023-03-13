@@ -15,16 +15,22 @@ import React, { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import "./index.css";
 import { INITIAL_PG_DATA } from "./constants";
+import { fetchPgList } from "../../apicalls";
 import axios from "axios";
+import { useStore } from "../../context/pg_store";
 
 function AddPGModal({
   isModalOpen,
   setIsModalVisible,
   pgData,
   setPgData,
+  isEdit = false,
   handleCancel,
   form,
+  userId,
 }) {
+  const { state, methods } = useStore();
+
   const roomTypeOptions = [
     {
       value: "Non-AC",
@@ -56,28 +62,31 @@ function AddPGModal({
 
   const handleSubmit = async () => {
     setLoading(true);
-    const res = await axios.post(
-      "http://localhost:8000/addpg",
-      { pgData },
-      {
-        headers: {
-          authorization: JSON.parse(localStorage.getItem("token")),
-        },
-      }
-    );
+    const res = await axios.post("http://localhost:8000/addpg", pgData, {
+      headers: {
+        authorization: JSON.parse(localStorage.getItem("token")),
+      },
+    });
     if (res.status === 200) {
-      let data = new FormData();
-      data.append("pic", pgData.image);
-      data.append("pgId", res?.data?.data?._id);
-      const addPicRes = await axios.post("/addPicture", data, {
-        headers: {
-          authorization: JSON.parse(localStorage.getItem("token")),
-        },
-      });
-      if (addPicRes.status === 200) {
-        message.success("PG added successfully", 2);
+      if (!isEdit) {
+        let data = new FormData();
+        data.append("pic", pgData.image);
+        data.append("pgId", res?.data?.data?._id);
+        const addPicRes = await axios.post("/addPicture", data, {
+          headers: {
+            authorization: JSON.parse(localStorage.getItem("token")),
+          },
+        });
+        if (addPicRes.status === 200) {
+          fetchPgList(methods.updatePgList, methods.updatePgLoader, "");
+          message.success("PG added successfully", 2);
+          setLoading(false);
+          handleCancel();
+        }
+      } else {
+        message.success("PG updated successfully")
         setLoading(false);
-        handleCancel();
+        setIsModalVisible(false)
       }
     }
   };
@@ -116,7 +125,7 @@ function AddPGModal({
   };
   return (
     <Modal
-      title="Add PG"
+      title={!isEdit ? "Add PG" : "Edit PG"}
       open={isModalOpen}
       maskClosable={false}
       onCancel={() => handleCancel()}
@@ -149,6 +158,7 @@ function AddPGModal({
                 style={formStyles}
               >
                 <Input
+                  defaultValue={pgData?.name}
                   value={pgData.name}
                   onChange={(e) => handleChange("name", e.target.value)}
                 />
@@ -173,6 +183,7 @@ function AddPGModal({
                 style={formStyles}
               >
                 <Input
+                  defaultValue={pgData?.address}
                   value={pgData.address}
                   onChange={(e) => handleChange("address", e.target.value)}
                 />
@@ -196,6 +207,7 @@ function AddPGModal({
                 style={formStyles}
               >
                 <Input
+                  defaultValue={pgData?.city}
                   value={pgData.city}
                   onChange={(e) => handleChange("city", e.target.value)}
                 />
@@ -218,6 +230,7 @@ function AddPGModal({
                 style={formStyles}
               >
                 <Input
+                  defaultValue={pgData?.district}
                   value={pgData.district}
                   onChange={(e) => handleChange("district", e.target.value)}
                 />
@@ -225,7 +238,7 @@ function AddPGModal({
             </Col>
           </Row>
           <Row {...cardRow}>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item
                 label={
                   <div style={{ fontWeight: 600, fontSize: "12px" }}>
@@ -242,15 +255,40 @@ function AddPGModal({
                 style={formStyles}
               >
                 <InputNumber
+                  defaultValue={pgData?.noofrooms || 1}
                   min={1}
                   value={pgData.noofrooms}
-                  defaultValue={1}
                   onChange={(val) => handleChange("noofrooms", val)}
                   style={{ width: "100%" }}
                 />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
+              <Form.Item
+                label={
+                  <div style={{ fontWeight: 600, fontSize: "12px" }}>
+                    Sharing per Room
+                  </div>
+                }
+                name="sharingPerRoom"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input Number of Rooms!",
+                  },
+                ]}
+                style={formStyles}
+              >
+                <InputNumber
+                  defaultValue={pgData?.sharingPerRooms || 1}
+                  min={1}
+                  value={pgData.sharingPerRoom}
+                  onChange={(val) => handleChange("sharingPerRoom", val)}
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
               <Form.Item
                 label={
                   <div style={{ fontWeight: 600, fontSize: "12px" }}>
@@ -275,7 +313,7 @@ function AddPGModal({
                 />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item
                 label={
                   <div style={{ fontWeight: 600, fontSize: "12px" }}>Price</div>
@@ -289,6 +327,7 @@ function AddPGModal({
                 ]}
               >
                 <InputNumber
+                  defaultValue={pgData?.price}
                   min={1}
                   style={{ width: "100%" }}
                   value={pgData.price}
@@ -315,35 +354,37 @@ function AddPGModal({
                 ]}
               >
                 <Input.TextArea
+                  defaultValue={pgData?.description}
                   value={pgData.description}
                   onChange={(e) => handleChange("description", e.target.value)}
                 />
               </Form.Item>
             </Col>
           </Row>
-
-          <Row {...cardRow}>
-            <Col span={24}>
-              <Form.Item name="image">
-                <Upload.Dragger
-                  multiple={false}
-                  listType="pictures"
-                  action={"http://localhost:3000/"}
-                  showUploadList={{ showRemoveIcon: true }}
-                  accept=".png,.jpeg,.doc"
-                  beforeUpload={(file) => {
-                    console.log(file);
-                    handleFileUpload(file);
-                    return false;
-                  }}
-                >
-                  <Button icon={<UploadOutlined />}>
-                    Click here to Upload Image
-                  </Button>
-                </Upload.Dragger>
-              </Form.Item>
-            </Col>
-          </Row>
+          {!isEdit && (
+            <Row {...cardRow}>
+              <Col span={24}>
+                <Form.Item name="image">
+                  <Upload.Dragger
+                    multiple={false}
+                    listType="pictures"
+                    action={"http://localhost:3000/"}
+                    showUploadList={{ showRemoveIcon: true }}
+                    accept=".png,.jpeg,.doc"
+                    beforeUpload={(file) => {
+                      console.log(file);
+                      handleFileUpload(file);
+                      return false;
+                    }}
+                  >
+                    <Button icon={<UploadOutlined />}>
+                      Click here to Upload Image
+                    </Button>
+                  </Upload.Dragger>
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
         </>
         <Row justify="end" style={{ paddingTop: "0.7rem" }}>
           <Col>
@@ -358,7 +399,7 @@ function AddPGModal({
               onClick={() => handleSubmit()}
               loading={loading}
             >
-              Add
+              {!isEdit ? "Add" : "Edit"}
             </Button>
           </Col>
         </Row>

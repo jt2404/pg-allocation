@@ -7,31 +7,30 @@ const pgSchema = new mongoose.Schema({
     required: [true, "Please Enter Product Name"],
     trim: true,
   },
-  address:{
+  address: {
     type: String,
     required: true,
   },
-//   address: [
-//     {
-//       houseno: {
-//         type: Number,
-//         required: true,
-//       },
-//       street: {
-//         type: String,
-//         required: true,
-//       },
-//       landmark: {
-//         type: String,
-//         required: true,
-//       },
-//       pincode: {
-//         type: Number,
-//         required: true,
-//       },
-//     },
-//   ],
-  location: {
+  //   address: [
+  //     {
+  //       houseno: {
+  //         type: Number,
+  //         required: true,
+  //       },
+  //       street: {
+  //         type: String,
+  //         required: true,
+  //       },
+  //       landmark: {
+  //         type: String,
+  //         required: true,
+  //       },
+  //       pincode: {
+  //         type: Number,
+  //         required: true,
+  //       },
+  //     },
+  //   ],
     longitude: {
       type: Number,
       required: false,
@@ -40,7 +39,7 @@ const pgSchema = new mongoose.Schema({
       type: Number,
       required: false,
     },
-  },
+
   city: {
     type: String,
     required: true,
@@ -53,6 +52,16 @@ const pgSchema = new mongoose.Schema({
   noofrooms: {
     type: Number,
     required: true,
+  },
+  sharingPerRoom: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
+  totalAccomodation: {
+    type: Number,
+    required: true,
+    default: 1,
   },
   roomtype: {
     type: String,
@@ -82,6 +91,7 @@ const pgSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   // numofReviews:
   // [
   //     {
