@@ -17,8 +17,14 @@ import "./index.css";
 import { INITIAL_PG_DATA } from "./constants";
 import axios from "axios";
 
-function AddPGModal({ isModalOpen, handleCancel }) {
-  const [pgData, setPgData] = useState(INITIAL_PG_DATA);
+function AddPGModal({
+  isModalOpen,
+  setIsModalVisible,
+  pgData,
+  setPgData,
+  handleCancel,
+  form,
+}) {
   const roomTypeOptions = [
     {
       value: "Non-AC",
@@ -36,6 +42,7 @@ function AddPGModal({ isModalOpen, handleCancel }) {
     marginBottom: "0.7rem",
     padding: "0px",
   };
+  const [loading, setLoading] = useState(false);
   const handleChange = (key, e) => {
     setPgData((prevPgData) => {
       return { ...prevPgData, [key]: e };
@@ -46,8 +53,9 @@ function AddPGModal({ isModalOpen, handleCancel }) {
       return { ...prevPgData, ["image"]: file };
     });
   };
-  console.log(pgData);
+
   const handleSubmit = async () => {
+    setLoading(true);
     const res = await axios.post(
       "http://localhost:8000/addpg",
       { pgData },
@@ -57,7 +65,6 @@ function AddPGModal({ isModalOpen, handleCancel }) {
         },
       }
     );
-    console.log(res)
     if (res.status === 200) {
       let data = new FormData();
       data.append("pic", pgData.image);
@@ -67,7 +74,11 @@ function AddPGModal({ isModalOpen, handleCancel }) {
           authorization: JSON.parse(localStorage.getItem("token")),
         },
       });
-      message.success("PG added successfully", 2);
+      if (addPicRes.status === 200) {
+        message.success("PG added successfully", 2);
+        setLoading(false);
+        handleCancel();
+      }
     }
   };
 
@@ -103,13 +114,12 @@ function AddPGModal({ isModalOpen, handleCancel }) {
     }
     return false;
   };
-  const [form] = Form.useForm();
   return (
     <Modal
       title="Add PG"
       open={isModalOpen}
-      onCancel={handleCancel}
       maskClosable={false}
+      onCancel={() => handleCancel()}
       width="45%"
       footer={null}
     >
@@ -337,13 +347,16 @@ function AddPGModal({ isModalOpen, handleCancel }) {
         </>
         <Row justify="end" style={{ paddingTop: "0.7rem" }}>
           <Col>
-            <Button type="default">Cancel</Button>
+            <Button type="default" onClick={() => handleCancel()}>
+              Cancel
+            </Button>
           </Col>
           <Col style={{ paddingLeft: "1rem" }}>
             <Button
               type="primary"
-              disabled={disableAddPGButton()}
-              onClick={handleSubmit}
+              disabled={disableAddPGButton() || loading}
+              onClick={() => handleSubmit()}
+              loading={loading}
             >
               Add
             </Button>

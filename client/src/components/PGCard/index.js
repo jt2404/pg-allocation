@@ -21,45 +21,42 @@ function PGCard({ pgs }) {
         </div>
         <div className="row">
           {pgs?.map((pg) => (
-            <Link to={`/pgdetails/${pg?._id}`}>
-              <div className="column" id={pg?._id}>
-                <div className="single-property">
-                  <div className="card">
-                    <div className="property-thumb">
-                      {/* <div className="property-tag">For Sale</div> */}
-                      <img src={pg.images[0] || kr1} alt="Palace" />
-                    </div>
-                    <div className="property-content">
+            <div className="column" id={pg?._id}>
+              <div className="single-property">
+                <div className="card">
+                  <div className="property-thumb">
+                    {/* <div className="property-tag">For Sale</div> */}
+                    <img src={pg.images[0] || kr1} alt="Palace" />
+                  </div>
+                  <div className="property-content">
+                    <Link to={`/pgdetails/${pg?._id}`}>
                       <h3>{pg?.name}</h3>
-                      <div className="mark">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>Popular Properties</span>
-                      </div>
-                      <span className="amount">&#8377;{pg?.price}</span>
-                    </div>
-                    <div className="property-footer">
-                      <ul>
-                        <li>
-                          <img src={location} alt="district" />
-                          <span>{pg?.district}</span>
-                        </li>
-                        <li>
-                          <img src={number} alt="Available Rooms" />
-                          <span>{pg?.noofrooms}</span>
-                        </li>
-                        <li>
-                          <img src={ac} alt="Room Type" />
-                          <span>{pg?.roomtype}</span>
-                        </li>
+                    </Link>
+                    <span className="amount">&#8377;{pg?.price}</span>
+                  </div>
+                  <div className="property-footer">
+                    <ul>
+                      <li>
+                        <img src={location} alt="district" />
+                        <span>{pg?.district}</span>
+                      </li>
+                      <li>
+                        <img src={number} alt="Available Rooms" />
+                        <span>{pg?.noofrooms}</span>
+                      </li>
+                      <li>
+                        <img src={ac} alt="Room Type" />
+                        <span>{pg?.roomtype}</span>
+                      </li>
 
-                        <div style={{ float: "right " }}>
-                          {/* <Link> */}
-                          {/* <button className="btn btn-primary m-2">
+                      <div style={{ float: "right " }}>
+                        {/* <Link> */}
+                        {/* <button className="btn btn-primary m-2">
                             Book Now
                           </button> */}
-                          {/* </Link> */}
-                        </div>
-                        {/* <div style={{ float: "right" }}>
+                        {/* </Link> */}
+                      </div>
+                      {/* <div style={{ float: "right" }}>
                           <button
                             className="btn btn-primary"
                             onClick={handleShow}
@@ -67,12 +64,11 @@ function PGCard({ pgs }) {
                             view details
                           </button>
                         </div> */}
-                      </ul>
-                    </div>
+                    </ul>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
 
           {/* <Modal show={show} onHide={handleClose}>
@@ -81,7 +77,7 @@ function PGCard({ pgs }) {
             </Modal.Header>
             <Modal.Body>
               <Carousel fade> */}
-                {/* {pgs.images.map(url=>
+          {/* {pgs.images.map(url=>
         return  <Carousel.Item>
         <img
 
@@ -91,7 +87,7 @@ function PGCard({ pgs }) {
         />
       </Carousel.Item>
         )} */}
-                {/* <Carousel.Item>
+          {/* <Carousel.Item>
                   <img
                     className="d-block w-100"
                     src="/static/media/kr1.1728cd57353aa767a8ec.jpg"
