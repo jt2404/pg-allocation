@@ -23,7 +23,7 @@ function MapModal({ mapPGModalVisible, setMapPGModalVisible }) {
       onCancel={() => setMapPGModalVisible(false)}
     >
       <div style={{ height: "50vh", width: "100%" }}>
-        {/* <GoogleMap
+        <GoogleMap
           yesIWantToUseGoogleMapApiInternals={true}
           bootstrapURLKeys={{ key: "AIzaSyCQ2VQrTCKMMzEM23i8MpWwywh5ePYzUEU" }}
           defaultZoom={10}
@@ -35,7 +35,7 @@ function MapModal({ mapPGModalVisible, setMapPGModalVisible }) {
             )
           }
           center={[22.6916, 72.8634]}
-        ></GoogleMap> */}
+        ></GoogleMap>
       </div>
     </Modal>
   );

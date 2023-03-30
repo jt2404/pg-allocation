@@ -39,7 +39,7 @@ const Homescreen = () => {
             onSearch={handleSearchChange}
           />
         </Col>
-        <Col span={3} style={{margin:"50px 0px"}}>
+        <Col span={3} style={{ margin: "50px 0px" }}>
           <Filters />
         </Col>
       </Row>

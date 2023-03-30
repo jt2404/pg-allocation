@@ -12,6 +12,7 @@ import {
   Form,
   message,
   Tooltip,
+  Avatar,
 } from "antd";
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import "./index.css";
@@ -33,7 +34,7 @@ import BookPGModal from "../BookPGModal";
 import dayjs from "dayjs";
 import AddPGModal from "../AddPGModal";
 import AddRatingModal from "../AddRatingModal";
-import Avatar from "avataaars";
+// import Avatar from "avataaars";
 import { generateRandomAvatarOptions } from "./Avatar";
 import AddImageModal from "../AddImageModal";
 const { Component } = React;
@@ -60,6 +61,16 @@ const PgDetails = ({ user }) => {
   const [isImageUploadModalVisible, setIsImageUploadModalVisible] =
     useState(false);
 
+  const avatarColor = ["#87d068", "#f56a00", "#1890ff"];
+  function getColor() {
+    return avatarColor[Math.floor(Math.random() * avatarColor.length)];
+  }
+  function nameInitials(name) {
+    const fullName = name?.split(" ");
+    const initials = fullName.shift()?.charAt(0) + fullName.pop()?.charAt(0);
+    return initials.toUpperCase();
+  }
+
   const handleStateChangeModal = () => {
     setIsBookModalVisible(!isBookModalVisible);
   };
@@ -76,6 +87,10 @@ const PgDetails = ({ user }) => {
     setIsImageUploadModalVisible(!isImageUploadModalVisible);
   };
 
+  const handleCancel = () => {
+    setIsEditPGModalVisible(false);
+  };
+
   useEffect(() => {
     if (pgInfo) {
       const INITIAL_PG_DATA = {
@@ -89,6 +104,7 @@ const PgDetails = ({ user }) => {
         price: pgInfo?.price,
         description: pgInfo?.description,
         sharingPerRoom: pgInfo?.sharingPerRoom,
+        userId: user?._id
       };
       setPgData(INITIAL_PG_DATA);
     }
@@ -228,7 +244,7 @@ const PgDetails = ({ user }) => {
               </div>
             ))}
           </Carousel>
-          {user?.stype === "admin" && (
+          {user?.stype === "admin" ? (
             <Row justify="end">
               <Col span={15}>
                 <AddImageModal
@@ -247,6 +263,29 @@ const PgDetails = ({ user }) => {
                 </Button>
               </Col>
             </Row>
+          ) : (
+            !isUserGaveRatingHistory && (
+              <Row justify="end">
+                <Col span={15}>
+                  <AddRatingModal
+                    isAddRatingVisible={isAddRatingVisible}
+                    ratingData={ratingData}
+                    setRatingData={setRatingData}
+                    form={form1}
+                    setIsAddRatingVisible={setIsAddRatingVisible}
+                    pgId={id}
+                    userId={user?._id}
+                  />
+                  <Button
+                    style={{ margin: ".5rem" }}
+                    type="primary"
+                    onClick={() => handleAddRatingModal()}
+                  >
+                    Add Feedback
+                  </Button>
+                </Col>
+              </Row>
+            )
           )}
         </Col>
         <Col span={8} style={{ paddingTop: "60px" }}>
@@ -284,7 +323,7 @@ const PgDetails = ({ user }) => {
                     </Tag>
                   </span>
                 </Row>
-                <Row style={{paddingTop:".5rem"}}>
+                <Row style={{ paddingTop: ".5rem" }}>
                   <p style={{ display: "inline-flex", alignItems: "center" }}>
                     Available Rooms: <UserOutlined />
                     {pgInfo?.availableroom}
@@ -326,23 +365,28 @@ const PgDetails = ({ user }) => {
                       pgData={pgData}
                       setPgData={setPgData}
                       isEdit={true}
+                      handleCancel={handleCancel}
                       // handleCancel={handleCancel}
                       form={form}
                     />
                     {user?.stype !== "admin" ? (
-                      <Tooltip
-                        title={
-                          pgInfo?.totalAccomodation === 0 ? "PG is full" : null
-                        }
-                      >
-                        <Button
-                          type="primary"
-                          onClick={handleStateChangeModal}
-                          disabled={pgInfo?.totalAccomodation === 0}
+                      <>
+                        <Tooltip
+                          title={
+                            pgInfo?.totalAccomodation === 0
+                              ? "PG is full"
+                              : null
+                          }
                         >
-                          Book now
-                        </Button>
-                      </Tooltip>
+                          <Button
+                            type="primary"
+                            onClick={handleStateChangeModal}
+                            disabled={pgInfo?.totalAccomodation === 0}
+                          >
+                            Book now
+                          </Button>
+                        </Tooltip>
+                      </>
                     ) : (
                       <Button
                         type="primary"
@@ -400,18 +444,37 @@ const PgDetails = ({ user }) => {
               pagination={{
                 clickable: true,
               }}
-              navigation={true}
+              // navigation={true}
               modules={[Autoplay, Pagination]}
               className="mySwiper"
             >
               {ratingHistory?.map((history) => {
                 return (
                   <SwiperSlide style={{ backgroundColor: "#f5f5f5" }}>
-                    <Avatar
+                    {/* <Avatar
                       style={{ width: "100px", height: "100px" }}
                       avatarStyle="Circle"
-                      {...generateRandomAvatarOptions()}
-                    />
+                      topType='LongHairMiaWallace'
+                      accessoriesType='Prescription02'
+                      hairColor='BrownDark'
+                      facialHairType='Blank'
+                      clotheType='Hoodie'
+                      clotheColor='PastelBlue'
+                      eyeType='Happy'
+                      eyebrowType='Default'
+                      mouthType='Smile'
+                      skinColor='Light'
+                      // {...generateRandomAvatarOptions()}
+                    /> */}
+                    {/* <img
+                      src="https://mdbcdn.b-cdn.net/img/new/avatars/1.webp"
+                      className="rounded-circle shadow-4"
+                      style={{ width: "150px" }}
+                      alt="Avatar"
+                    /> */}
+                    <Avatar style={{ backgroundColor: getColor() }}>
+                      {nameInitials(history?.userInfo?.name)}
+                    </Avatar>
                     <Row justify="center">
                       <p>{history?.userInfo?.name}</p>
                     </Row>
@@ -423,14 +486,8 @@ const PgDetails = ({ user }) => {
                           class="comms"
                           style={{ width: "40px", height: "auto" }}
                         ></img>
-                        <p class="text-muted">
-                          Lorem ipsum dolor sit amet, Sed sit amet ex id turpis
-                          consectetur adipiscing elit. Sed velit tellus,
-                          facilisis at ultrices eu, ultrices sed justo.{" "}
-                        </p>
-                        <p class="text-muted">
-                          Sed pellentesque hendrerit ante porttitor vestibulum.
-                          Sed urna odio, egestas a facilisis vitae
+                        <p className="text-muted" style={{ padding: "5px"}}>
+                          {history?.comment}
                         </p>
                       </div>
                     </Row>
@@ -448,7 +505,7 @@ const PgDetails = ({ user }) => {
           </Col>
         </Row>
       )}
-      {!isUserGaveRatingHistory && (
+      {/* {!isUserGaveRatingHistory && (
         <Row>
           <AddRatingModal
             isAddRatingVisible={isAddRatingVisible}
@@ -463,7 +520,7 @@ const PgDetails = ({ user }) => {
             Add Feedback
           </Button>
         </Row>
-      )}
+      )} */}
     </>
   );
 };

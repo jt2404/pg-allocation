@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import "./index.css";
 import kr1 from "../../assests/images/kr1.jpg";
 import location from "../../assests/images/location.png";

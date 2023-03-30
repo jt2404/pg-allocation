@@ -30,6 +30,8 @@ const SignUp = () => {
       localStorage.setItem('user',JSON.stringify(data?.result))
       localStorage.setItem('token', JSON.stringify(data?.auth))
       handleLocation();
+      window.location.reload();
+
     } else {
       message.error(data?.message);
     }

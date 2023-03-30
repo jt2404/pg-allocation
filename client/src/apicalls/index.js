@@ -1,7 +1,7 @@
-import axios from 'axios'
+import axios from "axios";
 
 export const fetchPgList = async (updatePg, setLoading, pgSearchValue) => {
-    setLoading(true)
+  setLoading(true);
   try {
     const pgdata = await axios.get(
       `http://localhost:8000/getpg/${pgSearchValue}`,

@@ -32,6 +32,12 @@ function FilterModal({
     setIsFilterModalVisible(false);
   };
 
+  const handleClearAll=()=>{
+    setSelectedCity(null);
+    setSelectedPrice(0);
+    setSelectedRating(0);
+  }
+
   const fetchData = async () => {
     methods.updatePgLoader(true);
     const pgdata = axios
@@ -65,7 +71,7 @@ function FilterModal({
       footer={
         <Row>
           <Col span={24}>
-            <Button>Clear All</Button>
+            <Button onClick={()=>handleClearAll()}>Clear All</Button>
             <Button
               type="primary"
               onClick={() => handleSubmit()}
@@ -79,7 +85,7 @@ function FilterModal({
       }
     >
       <Row>
-        <Col span={24}>Sort By Popularity</Col>
+        {/* <Col span={24}>Sort By Popularity</Col>
         <Col span={24}>
           <Select
             showSearch
@@ -113,7 +119,7 @@ function FilterModal({
               },
             ]}
           />
-        </Col>
+        </Col> */}
         <Col span={24}>Price</Col>
         <Col span={24}>
           <Slider
@@ -121,11 +127,12 @@ function FilterModal({
             max={maxPrice}
             step={100}
             onChange={onChange}
+            value={selectedPrice}
           />
         </Col>
         <Col span={24}>Rating</Col>
         <Col span={24}>
-          <Slider defaultValue={0} max={5} step={0.1} onChange={(val) => setSelectedRating(val)} />
+          <Slider defaultValue={0} value={selectedRating}  max={5} step={0.1} onChange={(val) => setSelectedRating(val)} />
         </Col>
         <Col span={24}>City</Col>
         <Col span={24}>
@@ -133,6 +140,7 @@ function FilterModal({
             showSearch
             placeholder="Search to Select"
             optionFilterProp="children"
+            value={selectedCity}
             onChange={(val) => onChangeCity(val)}
             filterOption={(input, option) =>
               (option?.label ?? "").includes(input)

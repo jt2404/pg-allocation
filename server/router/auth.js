@@ -286,13 +286,59 @@ router.post("/addpg", upload.single("file"), async (req, res) => {
   }
 });
 
-router.get("/getpg/:key?", verifyToken, async (req, res) => {
+router.get("/getpg/:key?", async (req, res) => {
   const token = req.headers.authorization;
-  const decoded = jwt.verify(token, "e-pg");
-  const userId = decoded.userLogin?._id;
-  const role = decoded.userLogin?.stype;
+  let decoded = "";
+  let userId = "";
+  let role = "";
+  if (token) {
+    decoded = jwt.verify(token, "e-pg");
+    userId = decoded.userLogin?._id;
+    role = decoded.userLogin?.stype;
+  }
+  // let decoded = jwt.verify(token, "e-pg");
+  // const userId = decoded.userLogin?._id;
+  // const role = decoded.userLogin?.stype;
   try {
     let pgs = [];
+    console.log(userId);
+    if (!userId) {
+      if (req?.params?.key) {
+        pgs = await Pg.find({
+          $or: [
+            { name: { $regex: req.params.key, $options: "i" } },
+            { city: { $regex: req.params.key, $options: "i" } },
+            { district: { $regex: req.params.key, $options: "i" } },
+          ],
+        });
+      } else {
+        pgs = await Pg.find();
+      }
+      let allPG = [];
+      for (let i = 0; i < pgs.length; i++) {
+        const ratingForPg = await Rate.findOne({ pg: pgs[i].id });
+        let pg = {
+          id: pgs[i].id,
+          name: pgs[i].name,
+          address: pgs[i].address,
+          city: pgs[i].city,
+          district: pgs[i].district,
+          noofrooms: pgs[i].noofrooms,
+          roomtype: pgs[i].roomtype,
+          images: pgs[i].images,
+          price: pgs[i].price,
+          availableroom: pgs[i].availableroom,
+          description: pgs[i].description,
+          sharingPerRoom: pgs[i].sharingPerRoom,
+          totalAccomodation: pgs[i].sharingPerRoom * pgs[i].noofrooms,
+          longitude: pgs[i]?.longitude,
+          latitude: pgs[i]?.latitude,
+          averageRating: ratingForPg?.ratingStar || 0,
+        };
+        allPG.push(pg);
+      }
+      return res.status(200).send(allPG);
+    }
     if (role === "admin") {
       if (!req?.params?.key) {
         pgs = await Pg.find({ owner: userId });
@@ -347,7 +393,7 @@ router.get("/getpg/:key?", verifyToken, async (req, res) => {
     //console.log(usersearchpg);
   } catch (err) {
     console.log(err);
-    res.status(400).send({ message: "Error occured" });
+    // res.status(400).send({ message: "Error occured" });
   }
 });
 
@@ -478,7 +524,7 @@ router.get("/xyz", async (req, res) => {
   }
 });
 
-router.post("/addRating", async (req, res) => {
+router.post("/addRating", verifyToken, async (req, res) => {
   const { pgId, rate, comment, userId } = req.body;
   if (!pgId || !rate || !comment || !userId) {
     return res.status(422).json({ message: "plz fill all the data " });
@@ -518,7 +564,7 @@ router.post("/addRating", async (req, res) => {
   }
 });
 
-router.post("/addBooking", async (req, res) => {
+router.post("/addBooking", verifyToken, async (req, res) => {
   const { pgId, bookedOn, userId, range, cost } = req.body;
   const customeremail = await User.findOne({ _id: userId });
   if (!pgId || !bookedOn || !userId || range?.length === 0 || !cost) {
@@ -545,7 +591,7 @@ router.post("/addBooking", async (req, res) => {
         cost: parseFloat(cost),
       });
       bookPg.save();
-      const pgOwner = await User.findOne({ _id: pg.owner })
+      const pgOwner = await User.findOne({ _id: pg.owner });
       let previousTotalAccomodation = pg.totalAccomodation;
       let sharingPerRooms = pg.sharingPerRoom;
       pg.totalAccomodation = previousTotalAccomodation - 1;
@@ -553,10 +599,10 @@ router.post("/addBooking", async (req, res) => {
         pg.sharingPerRooms = sharingPerRooms - 1;
       }
       pg.save();
-      let username = String(user.name)
-      let startdate = range[0]
-      let enddate = range[1]
-      let price = parseInt(cost)
+      let username = String(user.name);
+      let startdate = range[0];
+      let enddate = range[1];
+      let price = parseInt(cost);
       let mailOptions = {
         from: "noreply.stayease@gmail.com",
         to: String(user.email),
@@ -673,11 +719,11 @@ router.post("/addBooking", async (req, res) => {
         }
         console.log(`Message Sent ${info.messageId}`);
         transporter.sendMail(mailOptions2, (err, info) => {
-        if (err) {
-          return console.log(err);
-        }
-        console.log(`Message Sent ${info.messageId}`);
-      });
+          if (err) {
+            return console.log(err);
+          }
+          console.log(`Message Sent ${info.messageId}`);
+        });
       });
       return res.status(200).json({ message: "PG booked successfully" });
     } catch (err) {
@@ -726,7 +772,7 @@ router.get("/getrating/:id", async (req, res) => {
   }
 });
 
-router.get("/bookings", async (req, res) => {
+router.get("/bookings", verifyToken, async (req, res) => {
   // const pgId = req.params.pgId;
   const token = req.headers.authorization;
   const decoded = jwt.verify(token, "e-pg");
@@ -763,7 +809,7 @@ router.get("/bookings", async (req, res) => {
   }
 });
 
-router.get("/booking/:userId", async (req, res) => {
+router.get("/booking/:userId", verifyToken, async (req, res) => {
   const userId = req.params.userId;
   try {
     const bookings = await BookPG.find({ user: userId }).populate("pg");
@@ -780,6 +826,10 @@ function verifyToken(req, res, next) {
     token = token.split(" ")[0];
     jwt.verify(token, jwtKey, (err, valid) => {
       if (err) {
+        if (err.name === "TokenExpiredError") {
+          const payload = jwt.verify(token, SECRET, { ignoreExpiration: true });
+          // your code
+        }
         res.status(401).send({ result: "Please provide a valid token" });
       } else {
         next();

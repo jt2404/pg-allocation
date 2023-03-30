@@ -124,13 +124,19 @@ function BookingHistory({ userId, role }) {
                         </p>
 
                         <p>
-                          <b>BookedOn:</b> {booking?.bookedOn}
+                          <b>BookedOn:</b>{" "}
+                          {booking?.bookedOn &&
+                            dayjs(booking?.bookedOn).format("DD/MM/YYYY")}
                         </p>
                         <p>
-                          <b>StartDate:</b> {booking?.effective_from}
+                          <b>StartDate:</b>{" "}
+                          {booking?.effective_from &&
+                            dayjs(booking?.effective_from).format("DD/MM/YYYY")}
                         </p>
                         <p>
-                          <b>EndDate:</b> {booking?.effective_to}
+                          <b>EndDate:</b>{" "}
+                          {booking?.effective_to &&
+                            dayjs(booking?.effective_to).format("DD/MM/YYYY")}
                         </p>
                         {/* <p style={{ fontWeight: "600", color: "gray" }}>
                   *<i>{booking.pg.description}</i>
